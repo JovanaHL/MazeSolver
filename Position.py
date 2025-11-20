@@ -10,6 +10,21 @@ class Position:
         self.x = x
         self.y = y
 
+    def get_direction_to(self, other_position):
+        # return Direction from this Position to another position, or None if not adjacent
+        # get distances in x and y pos
+        dx = other_position.x - self.x
+        dy = other_position.y - self.y
+
+        # check if not adjacent and immediately return no direction
+        if abs(dx) + abs(dy) != 1:
+            return None
+
+        for direction in Direction:
+            if direction.value == (dx, dy):
+                return direction
+
+        raise ValueError("Unexpected direction")
   
     def get_position(self):
         return self.x, self.y
@@ -19,3 +34,4 @@ class Position:
         new_x = self.x + delta_x
         new_y = self.y + delta_y
         return Position(new_x, new_y)
+
