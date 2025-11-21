@@ -1,5 +1,6 @@
 import tkinter as tk
 from Maze import Maze
+from MazeGenerator import MazeGenerator
 
 
 class MazeGUI:
@@ -8,6 +9,7 @@ class MazeGUI:
         self.cell_size = 50
         self.window = tk.Tk()
         self.canvas = tk.Canvas(self.window, width=maze.width*self.cell_size, height=maze.height*self.cell_size, bg="white")
+        self.generator = MazeGenerator(maze)
 
     def setup(self):
         self.window.title("Maze Generator")
@@ -30,10 +32,24 @@ class MazeGUI:
         self.create()
         self.window.mainloop()
 
+    def animate_step(self):
+        if self.generator.onestep_traversal():
+            self.redraw()
+            self.window.after(100, self.animate_step)
+        else:
+            print("Traversal finished.")
+
+    def redraw(self):
+        for cell in self.generator.visitedCells:
+            self.draw(cell.x, cell.y, 'white')
+        self.draw(self.generator.current_position.x, self.generator.current_position.y, color='red')
+
 
 if __name__ == "__main__":
-    maze = Maze(20, 20)
+    maze = Maze(10, 10)
     gui = MazeGUI(maze)
     gui.setup()
+    gui.animate_step()
     gui.run()
+
 
