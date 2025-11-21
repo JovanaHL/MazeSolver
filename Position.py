@@ -10,6 +10,12 @@ class Position:
         self.x = x
         self.y = y
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
     def get_direction_to(self, other_position):
         # return Direction from this Position to another position, or None if not adjacent
         # get distances in x and y pos
