@@ -1,6 +1,7 @@
 import tkinter as tk
-from Maze import Maze
+from Maze import Maze, Cell
 from MazeGenerator import MazeGenerator
+from Position import Position
 
 
 class MazeGUI:
@@ -18,31 +19,56 @@ class MazeGUI:
     def create(self):
         for row in range(self.maze.height):
             for col in range(self.maze.width):
-                print(f"Drawing cell {row}:{col}")
-                self.draw(row, col, 'blue')
+                self.draw(Position(row, col), 'blue')
+                self.draw_wall(Position(row, col), 'black')
 
-    def draw(self, row, col, color):
-        x1 = col * self.cell_size
-        y1 = row * self.cell_size
+
+    def draw(self, position: Position, color):
+        x1 = position.y * self.cell_size # swapped because col -> position.y (horizontal; LEFT/RIGHT)
+        y1 = position.x * self.cell_size # swapped because row -> position.x (vertical; UP/DOWN)
         x2 = x1 + self.cell_size
         y2 = y1 + self.cell_size
-        self.canvas.create_rectangle(x1, y1, x2, y2, outline='red', fill=color, width=2)
+        self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, width=0)
+
+    def draw_wall(self, position: Position, color):
+        x1 = position.y * self.cell_size
+        y1 = position.x * self.cell_size
+        x2 = x1 + self.cell_size
+        y2 = y1 + self.cell_size
+        cell = self.maze.get_cell(position)
+
+        if cell.north_wall:
+            self.canvas.create_line(x1, y1, x2, y1, fill=color, width=2)
+
+        if cell.south_wall:
+            self.canvas.create_line(x1, y2, x2, y2, fill=color, width=2)
+
+        if cell.west_wall:
+            self.canvas.create_line(x1, y1, x1, y2, fill=color, width=2)
+
+        if cell.east_wall:
+            self.canvas.create_line(x2, y1, x2, y2, fill=color, width=2)
 
     def run(self):
         self.create()
         self.window.mainloop()
 
     def animate_step(self):
-        if self.generator.onestep_traversal():
+        if self.generator.backtracking_traversal():
             self.redraw()
             self.window.after(100, self.animate_step)
         else:
+            self.redraw()
+            self.draw(self.generator.current_position, 'white')
+            self.draw_wall(self.generator.current_position, 'black')
             print("Traversal finished.")
 
     def redraw(self):
-        for cell in self.generator.visitedCells:
-            self.draw(cell.x, cell.y, 'white')
-        self.draw(self.generator.current_position.x, self.generator.current_position.y, color='red')
+        for cell in self.generator.visited_cells:
+            self.draw(cell, 'white')
+            self.draw_wall(cell, 'black')
+        self.draw(self.generator.current_position, 'red')
+        self.draw_wall(self.generator.current_position, 'black')
 
 
 if __name__ == "__main__":
