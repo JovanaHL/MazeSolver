@@ -29,7 +29,6 @@ class Maze:
             raise IndexError(f'Invalid coordinates ({position.x}, {position.y}). Cell position out of bounds: w: {self.width}, h: {self.height}')
         self.maze[position.x][position.y] = cell
 
-
     def get_cell(self, position):
         if not self.is_valid(position):
             raise IndexError(f'Invalid coordinates ({position.x}, {position.y}).')
@@ -43,7 +42,26 @@ class Maze:
             if self.is_valid(adjacent_pos):
                 neighbors.append(adjacent_pos)
 
+        return neighbors
 
+    def get_neighboring_path(self, position: Position):
+        neighbors = []
+
+        for direction in Direction:
+            adjacent_pos = position.get_adjacent(direction)
+            if self.is_valid(adjacent_pos):
+                if direction == Direction.DOWN:
+                    if not self.get_cell(position).south_wall:
+                        neighbors.append(adjacent_pos)
+                if direction == Direction.UP:
+                    if not self.get_cell(position).north_wall:
+                        neighbors.append(adjacent_pos)
+                if direction == Direction.LEFT:
+                    if not self.get_cell(position).west_wall:
+                        neighbors.append(adjacent_pos)
+                if direction == Direction.RIGHT:
+                    if not self.get_cell(position).east_wall:
+                        neighbors.append(adjacent_pos)
         return neighbors
 
     def remove_wall(self, position1: Position, position2: Position):
