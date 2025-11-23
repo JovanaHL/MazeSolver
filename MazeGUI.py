@@ -2,7 +2,7 @@ import tkinter as tk
 from Maze import Maze, Cell
 from MazeGenerator import MazeGenerator
 from Position import Position
-from Project.PathFinder import PathFinder
+from PathFinder import PathFinder
 
 
 class MazeGUI:
@@ -60,7 +60,6 @@ class MazeGUI:
             self.redraw()
             self.window.after(100, self.animate_step)
         else:
-            self.redraw()
             print("Traversal finished.")
             for cell in self.generator.visited_cells:
                 self.draw(cell, 'white')
@@ -87,7 +86,6 @@ class MazeGUI:
         for cell in self.pathfinder.visited_cells:
             self.draw(cell, 'red')
             self.draw_wall(cell, 'black')
-
         self.draw(self.pathfinder.current_position, 'green')
         self.draw_wall(self.pathfinder.current_position, 'black')
 
@@ -97,7 +95,6 @@ if __name__ == "__main__":
     gui = MazeGUI(maze)
     gui.setup()
     gui.animate_step()
-    #gui.animate_path()
     gui.run()
 
 

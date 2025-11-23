@@ -1,7 +1,4 @@
-import random
 from collections import deque
-from queue import Queue
-
 from Maze import Maze
 
 
@@ -30,6 +27,8 @@ class PathFinder:
             print("Maze solved.")
             self.reconstruct_path()
             return False
+
+        # add safety check in case queue is empty
 
         adjacent_cells = self.maze.get_neighboring_path(self.current_position)
         for cell in adjacent_cells:
