@@ -2,6 +2,7 @@ import tkinter as tk
 from Maze import Maze, Cell
 from MazeGenerator import MazeGenerator
 from Position import Position
+from Project.PathFinder import PathFinder
 
 
 class MazeGUI:
@@ -11,9 +12,10 @@ class MazeGUI:
         self.window = tk.Tk()
         self.canvas = tk.Canvas(self.window, width=maze.width*self.cell_size, height=maze.height*self.cell_size, bg="white")
         self.generator = MazeGenerator(maze)
+        self.pathfinder = PathFinder(maze)
 
     def setup(self):
-        self.window.title("Maze Generator")
+        self.window.title("Maze Generator + Solver")
         self.canvas.pack(fill="both", expand=True)
 
     def create(self):
@@ -59,9 +61,20 @@ class MazeGUI:
             self.window.after(100, self.animate_step)
         else:
             self.redraw()
-            self.draw(self.generator.current_position, 'white')
-            self.draw_wall(self.generator.current_position, 'black')
             print("Traversal finished.")
+            for cell in self.generator.visited_cells:
+                self.draw(cell, 'white')
+                self.draw_wall(cell, 'black')
+            self.animate_path()
+
+    def animate_path(self):
+        if self.pathfinder.backtracking_traversal():
+            self.redraw_path()
+            self.window.after(100, self.animate_path)
+        else:
+            for cell in self.pathfinder.solution_path:
+                self.draw(cell, 'green')
+                self.draw_wall(cell, 'black')
 
     def redraw(self):
         for cell in self.generator.visited_cells:
@@ -70,12 +83,21 @@ class MazeGUI:
         self.draw(self.generator.current_position, 'red')
         self.draw_wall(self.generator.current_position, 'black')
 
+    def redraw_path(self):
+        for cell in self.pathfinder.visited_cells:
+            self.draw(cell, 'red')
+            self.draw_wall(cell, 'black')
+
+        self.draw(self.pathfinder.current_position, 'green')
+        self.draw_wall(self.pathfinder.current_position, 'black')
+
 
 if __name__ == "__main__":
-    maze = Maze(10, 10)
+    maze = Maze(15, 15)
     gui = MazeGUI(maze)
     gui.setup()
     gui.animate_step()
+    #gui.animate_path()
     gui.run()
 
 
